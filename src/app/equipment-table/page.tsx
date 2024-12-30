@@ -57,6 +57,7 @@ export default function EquipmentTable() {
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           className="border rounded p-2 w-full"
+          aria-label="Filter Equipment"
         />
       </div>
 
@@ -66,6 +67,7 @@ export default function EquipmentTable() {
           value={bulkStatus}
           onChange={(e) => setBulkStatus(e.target.value)}
           className="border rounded p-2 mr-2"
+          aria-label="Bulk Status Update"
         >
           <option value="">Select status</option>
           <option value="Operational">Operational</option>
@@ -87,30 +89,35 @@ export default function EquipmentTable() {
             <th
               onClick={() => setSortKey("name")}
               className="cursor-pointer border p-2"
+              aria-label="Sort by Name"
             >
               Name
             </th>
             <th
               onClick={() => setSortKey("type")}
               className="cursor-pointer border p-2"
+              aria-label="Sort by Type"
             >
               Type
             </th>
             <th
               onClick={() => setSortKey("purchaseDate")}
               className="cursor-pointer border p-2"
+              aria-label="Sort by Purchase Date"
             >
               Purchase Date
             </th>
             <th
               onClick={() => setSortKey("maintenanceInterval")}
               className="cursor-pointer border p-2"
+              aria-label="Sort by Maintenance Interval"
             >
               Interval (Days)
             </th>
             <th
               onClick={() => setSortKey("status")}
               className="cursor-pointer border p-2"
+              aria-label="Sort by Status"
             >
               Status
             </th>
@@ -141,7 +148,7 @@ export default function EquipmentTable() {
       {/* Go Back Button */}
       <div className="mt-4">
         <a href="/equipment" className="text-blue-500 underline">
-          ← Go Back to Equipment Form
+          ← Go Back to Equipment List
         </a>
       </div>
     </div>
