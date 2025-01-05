@@ -20,15 +20,19 @@ const mockData: Equipment[] = [
 export default function EquipmentTable() {
   const [equipment, setEquipment] = useState<Equipment[]>(mockData);
   const [filter, setFilter] = useState("");
-  const [sortKey, setSortKey] = useState<keyof Equipment>("name");
+  const [sortKey, setSortKey] = useState<keyof Equipment | "">("");
   const [bulkStatus, setBulkStatus] = useState("");
 
-  // Sort equipment
-  const sortedEquipment = [...equipment].sort((a, b) => {
-    if (a[sortKey] < b[sortKey]) return -1;
-    if (a[sortKey] > b[sortKey]) return 1;
-    return 0;
-  });
+  // Sort equipment if sortKey is set
+  const sortedEquipment = sortKey
+    ? [...equipment].sort((a, b) => {
+        const aValue = a[sortKey as keyof Equipment];
+        const bValue = b[sortKey as keyof Equipment];
+        if (aValue < bValue) return -1;
+        if (aValue > bValue) return 1;
+        return 0;
+      })
+    : equipment;
 
   // Filter equipment
   const filteredEquipment = sortedEquipment.filter((eq) =>
@@ -39,9 +43,11 @@ export default function EquipmentTable() {
 
   // Update bulk status
   const updateBulkStatus = () => {
-    const updatedEquipment = equipment.map((eq) =>
-      eq.status !== bulkStatus ? { ...eq, status: bulkStatus } : eq
-    );
+    if (!bulkStatus) return;
+    const updatedEquipment = equipment.map((eq) => ({
+      ...eq,
+      status: bulkStatus,
+    }));
     setEquipment(updatedEquipment);
   };
 
@@ -62,7 +68,7 @@ export default function EquipmentTable() {
       </div>
 
       {/* Bulk Status Update */}
-      <div className="mb-4">
+      <div className="mb-4 flex items-center">
         <select
           value={bulkStatus}
           onChange={(e) => setBulkStatus(e.target.value)}
@@ -76,9 +82,14 @@ export default function EquipmentTable() {
         </select>
         <button
           onClick={updateBulkStatus}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          disabled={!bulkStatus}
+          className={`px-4 py-2 rounded ${
+            bulkStatus
+              ? "bg-blue-500 text-white hover:bg-blue-600"
+              : "bg-gray-300 text-gray-700 cursor-not-allowed"
+          }`}
         >
-          Update Status for All
+          Update All Status
         </button>
       </div>
 
@@ -147,10 +158,11 @@ export default function EquipmentTable() {
 
       {/* Go Back Button */}
       <div className="mt-4">
-        <a href="/equipment" className="text-blue-500 underline">
-          ← Go Back to Equipment List
+        <a href="/" className="text-blue-500 underline">
+          ← Go Back to Home
         </a>
       </div>
     </div>
   );
 }
+

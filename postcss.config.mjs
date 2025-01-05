@@ -2,7 +2,8 @@
 const config = {
   plugins: {
     tailwindcss: {},
+    autoprefixer: {}, // This ensures proper browser compatibility
   },
 };
 
-export default config;
+export default config; // If using ES Modules

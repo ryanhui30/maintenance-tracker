@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Maintenance Tracker
 
-## Getting Started
+Maintenance Tracker is a simple web app for managing equipment and maintenance records. The goal is to streamline the process of tracking maintenance activities, equipment status, and related data in an organized and intuitive way.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### Prerequisites
+- Node.js (v16 or later)
+- npm or yarn
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation Steps
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/maintenance-tracker.git
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+2. Navigate to project directory:
+    cd maintenance-tracker
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Install dependencies:
+    npm install
 
-## Learn More
+4. Start the development server:
+    npm run dev
 
-To learn more about Next.js, take a look at the following resources:
+### Key Libraries
+Next.js: For server side rendering and routing.
+Tailwind CSS: For fast and customizable styling.
+Chart.js: For visualizing data in charts.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Designing
+Have a simple and aesthetic looking management website using React and other components.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Testing
+Currently in progress.

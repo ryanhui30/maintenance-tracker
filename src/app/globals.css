@@ -1,21 +1,17 @@
+/* globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground: #ffffff;
-  --background: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground: #0a0a0a;
-    --background: #ededed;
-  }
-}
-
+/* Global Light Mode Styles */
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #ffffff; /* White background */
+  color: #333333; /* Dark text color */
+}
+
+/* Custom Pastel Colors (if not defined in tailwind.config.js) */
+:root {
+  --pastel-blue: #A3D8F4;
+  --pastel-pink: #F4B6C2;
+  --pastel-green: #A8E6CF;
 }

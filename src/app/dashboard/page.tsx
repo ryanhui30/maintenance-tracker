@@ -30,8 +30,8 @@ export default function Dashboard() {
     datasets: [
       {
         data: [70, 20, 10],
-        backgroundColor: ["#4caf50", "#ffc107", "#f44336"],
-        hoverBackgroundColor: ["#45a049", "#e6ac00", "#e57373"],
+        backgroundColor: ["#A8E6CF", "#FFD3B6", "#FFAAA5"],
+        hoverBackgroundColor: ["#94D7B5", "#FFBE9E", "#FF8A80"],
       },
     ],
   };
@@ -42,7 +42,8 @@ export default function Dashboard() {
       {
         label: "Hours",
         data: [30, 50, 20],
-        backgroundColor: ["#3f51b5", "#ff5722", "#009688"],
+        backgroundColor: ["#A3D8F4", "#FFB6C1", "#FFDAC1"],
+        hoverBackgroundColor: ["#8FC8E6", "#FFA4B2", "#FFCFB0"],
       },
     ],
   };
@@ -55,31 +56,29 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+    <div className="p-4 space-y-6">
+      <h1 className="text-2xl font-bold mb-2 text-[#6C5B7B]">Dashboard</h1>
 
-      {/* Pie Chart: Equipment Status Breakdown */}
-      <div className="mb-6">
-        <h2 className="text-lg font-bold mb-2">Equipment Status Breakdown</h2>
-        <div className="w-1/2 mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Pie Chart: Equipment Status Breakdown */}
+        <div className="p-4 rounded-lg bg-white shadow">
+          <h2 className="text-lg font-semibold mb-2 text-[#355C7D]">Equipment Status</h2>
           <Pie data={equipmentStatusData} />
         </div>
-      </div>
 
-      {/* Bar Chart: Maintenance Hours by Department */}
-      <div className="mb-6">
-        <h2 className="text-lg font-bold mb-2">Maintenance Hours by Department</h2>
-        <div className="w-3/4 mx-auto">
+        {/* Bar Chart: Maintenance Hours by Department */}
+        <div className="p-4 rounded-lg bg-white shadow">
+          <h2 className="text-lg font-semibold mb-2 text-[#355C7D]">Maintenance Hours</h2>
           <Bar data={maintenanceHoursData} options={{ responsive: true }} />
         </div>
       </div>
 
       {/* Recent Maintenance Activities */}
-      <div>
-        <h2 className="text-lg font-bold mb-2">Recent Maintenance Activities</h2>
-        <table className="w-full border-collapse border border-gray-300">
+      <div className="p-4 rounded-lg bg-white shadow">
+        <h2 className="text-lg font-semibold mb-2 text-[#355C7D]">Recent Activities</h2>
+        <table className="w-full text-sm border-collapse">
           <thead>
-            <tr>
+            <tr className="bg-white shadow text-[#355C7D]">
               <th className="border p-2">Equipment</th>
               <th className="border p-2">Date</th>
               <th className="border p-2">Action</th>
@@ -87,22 +86,22 @@ export default function Dashboard() {
           </thead>
           <tbody>
             {recentActivities.map((activity) => (
-              <tr key={activity.id}>
-                <td className="border p-2">{activity.equipment}</td>
-                <td className="border p-2">{activity.date}</td>
-                <td className="border p-2">{activity.action}</td>
+              <tr key={activity.id} className="odd:bg-white even:bg-[#F8F9FA]">
+                <td className="border p-2 text-[#355C7D]">{activity.equipment}</td>
+                <td className="border p-2 text-[#355C7D]">{activity.date}</td>
+                <td className="border p-2 text-[#355C7D]">{activity.action}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* Go Back Button */}
-      <div className="mt-6">
-        <a href="/" className="text-blue-500 underline">
-          ← Go Back to Home
-        </a>
-      </div>
+        {/* Go Back Button */}
+        <div className="mt-4">
+            <a href="/" className="text-blue-500 underline">
+            ← Go Back to Home
+            </a>
+        </div>
     </div>
   );
 }

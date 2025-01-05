@@ -1,19 +1,22 @@
 "use client";
 
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import React from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 // Schema Validation with Zod
 const equipmentSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
+  type: z.string().nonempty("Type is required"),
   location: z.string().nonempty("Location is required"),
-  department: z.enum(['Machining', 'Assembly', 'Packaging', 'Shipping']),
+  department: z.enum(["Machining", "Assembly", "Packaging", "Shipping"]),
   model: z.string().nonempty("Model is required"),
-  serialNumber: z.string().regex(/^[a-zA-Z0-9]+$/, "Serial Number must be alphanumeric"),
+  serialNumber: z
+    .string()
+    .regex(/^[a-zA-Z0-9]+$/, "Serial Number must be alphanumeric"),
   installDate: z.date().refine((date) => date < new Date(), "Install date must be in the past"),
-  status: z.enum(['Operational', 'Down', 'Maintenance', 'Retired']),
+  status: z.enum(["Operational", "Down", "Maintenance", "Retired"]),
 });
 
 type EquipmentFormValues = z.infer<typeof equipmentSchema>;
@@ -37,6 +40,11 @@ export default function EquipmentPage() {
           <label>Name</label>
           <input {...register("name")} className="border rounded p-2 w-full" />
           {errors.name && <p className="text-red-500">{errors.name.message}</p>}
+        </div>
+        <div>
+          <label>Type</label>
+          <input {...register("type")} className="border rounded p-2 w-full" />
+          {errors.type && <p className="text-red-500">{errors.type.message}</p>}
         </div>
         <div>
           <label>Location</label>
