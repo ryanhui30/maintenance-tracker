@@ -14,12 +14,15 @@ Maintenance Tracker is a simple web app for managing equipment and maintenance r
    git clone https://github.com/yourusername/maintenance-tracker.git
 
 2. Navigate to project directory:
+   ```bash
     cd maintenance-tracker
 
 3. Install dependencies:
+    ```bash
     npm install
 
 4. Start the development server:
+    ```bash
     npm run dev
 
 ### Key Libraries

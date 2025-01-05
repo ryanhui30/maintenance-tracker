@@ -9,31 +9,31 @@ export default function HomePage() {
       <div className="space-y-4">
         <Link
           href="/equipment"
-          className="bg-[#A3D8F4] text-white px-6 py-3 rounded-lg hover:bg-[#8FC8D5] block text-center"
+          className="bg-[#FFD7BA] text-white px-6 py-3 rounded-lg hover:bg-[#FFC4A3] block text-center"
         >
           Go to Equipment Form
         </Link>
         <Link
           href="/equipment-table"
-          className="bg-[#F4B6C2] text-white px-6 py-3 rounded-lg hover:bg-[#E08B96] block text-center"
+          className="bg-[#FFEBBA] text-white px-6 py-3 rounded-lg hover:bg-[#FFE3A3] block text-center"
         >
           Go to Equipment Table
         </Link>
         <Link
           href="/maintenance"
-          className="bg-[#A8E6CF] text-white px-6 py-3 rounded-lg hover:bg-[#7FCDB7] block text-center"
+          className="bg-[#BAE1FF] text-white px-6 py-3 rounded-lg hover:bg-[#A3D4FF] block text-center"
         >
           Go to Maintenance Form
         </Link>
         <Link
           href="/maintenance-records"
-          className="bg-[#F4B6C2] text-white px-6 py-3 rounded-lg hover:bg-[#E08B96] block text-center"
+          className="bg-[#BAFFD7] text-white px-6 py-3 rounded-lg hover:bg-[#A3FFCA] block text-center"
         >
           Go to Maintenance Records Table
         </Link>
         <Link
           href="/dashboard"
-          className="bg-[#A3D8F4] text-white px-6 py-3 rounded-lg hover:bg-[#8FC8D5] block text-center"
+          className="bg-[#E1BAFF] text-white px-6 py-3 rounded-lg hover:bg-[#D4A3FF] block text-center"
         >
           Go to Dashboard
         </Link>

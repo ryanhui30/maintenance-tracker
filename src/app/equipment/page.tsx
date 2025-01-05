@@ -7,8 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 // Schema Validation with Zod
 const equipmentSchema = z.object({
-  name: z.string().min(3, "Name must be at least 3 characters"),
-  type: z.string().nonempty("Type is required"),
+  id: z.string().min(1, "ID must be at least 1 characters"),
+  name: z.string().nonempty("Name is required"),
   location: z.string().nonempty("Location is required"),
   department: z.enum(["Machining", "Assembly", "Packaging", "Shipping"]),
   model: z.string().nonempty("Model is required"),
@@ -37,14 +37,14 @@ export default function EquipmentPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Input fields */}
         <div>
+          <label>ID</label>
+          <input {...register("id")} className="border rounded p-2 w-full" />
+          {errors.id && <p className="text-red-500">{errors.id.message}</p>}
+        </div>
+        <div>
           <label>Name</label>
           <input {...register("name")} className="border rounded p-2 w-full" />
           {errors.name && <p className="text-red-500">{errors.name.message}</p>}
-        </div>
-        <div>
-          <label>Type</label>
-          <input {...register("type")} className="border rounded p-2 w-full" />
-          {errors.type && <p className="text-red-500">{errors.type.message}</p>}
         </div>
         <div>
           <label>Location</label>
