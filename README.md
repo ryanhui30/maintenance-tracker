@@ -34,4 +34,7 @@ Chart.js: For visualizing data in charts.
 Have a simple and aesthetic looking management website using React and other components.
 
 ### Testing
+    ```bash
+    npx playwright test
 Currently in progress.
+
