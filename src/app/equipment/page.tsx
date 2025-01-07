@@ -5,9 +5,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-// Schema Validation with Zod
 const equipmentSchema = z.object({
-  id: z.string().min(1, "ID must be at least 1 characters"),
+  id: z.string().min(1, "ID must be at least 1 character"),
   name: z.string().nonempty("Name is required"),
   location: z.string().nonempty("Location is required"),
   department: z.enum(["Machining", "Assembly", "Packaging", "Shipping"]),
@@ -15,7 +14,11 @@ const equipmentSchema = z.object({
   serialNumber: z
     .string()
     .regex(/^[a-zA-Z0-9]+$/, "Serial Number must be alphanumeric"),
-  installDate: z.date().refine((date) => date < new Date(), "Install date must be in the past"),
+  installDate: z
+    .string()
+    .nonempty("Install date is required")
+    .transform((val) => new Date(val))
+    .refine((date) => date < new Date(), "Install date must be in the past"),
   status: z.enum(["Operational", "Down", "Maintenance", "Retired"]),
 });
 
