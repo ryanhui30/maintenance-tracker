@@ -1,41 +1,56 @@
-import Link from 'next/link';
+import Link from "next/link";
+import { FaTools, FaTable, FaWrench, FaClipboardList, FaChartPie } from "react-icons/fa";
 
 export default function HomePage() {
   return (
-    <div className="p-8 space-y-4">
-      <h1 className="text-2xl font-bold mb-4">Maintenance Tracker</h1>
-      <p className="mb-4">Start by adding your equipment and maintenance records.</p>
+    <div className="p-8 space-y-8">
+      <h1 className="text-3xl font-bold text-center text-gray-800">Maintenance Tracker</h1>
+      <p className="text-center text-gray-600">Easily manage your equipment and maintenance records.</p>
 
-      <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-6 max-w-4xl mx-auto">
+        {/* Equipment Form */}
         <Link
           href="/equipment"
-          className="bg-[#FFD7BA] text-white px-6 py-3 rounded-lg hover:bg-[#FFC4A3] block text-center"
+          className="flex flex-col items-center justify-center bg-[#FFD7BA] text-white p-6 rounded-lg shadow-lg hover:bg-[#FFC4A3] transform hover:scale-105 transition-transform duration-200"
         >
-          Go to Equipment Form
+          <FaTools size={40} className="mb-4" />
+          <span className="text-lg font-semibold">Equipment Form</span>
         </Link>
+
+        {/* Equipment Table */}
         <Link
           href="/equipment-table"
-          className="bg-[#FFEBBA] text-white px-6 py-3 rounded-lg hover:bg-[#FFE3A3] block text-center"
+          className="flex flex-col items-center justify-center bg-[#FFEBBA] text-white p-6 rounded-lg shadow-lg hover:bg-[#FFE3A3] transform hover:scale-105 transition-transform duration-200"
         >
-          Go to Equipment Table
+          <FaTable size={40} className="mb-4" />
+          <span className="text-lg font-semibold">Equipment Table</span>
         </Link>
+
+        {/* Maintenance Form */}
         <Link
           href="/maintenance"
-          className="bg-[#BAE1FF] text-white px-6 py-3 rounded-lg hover:bg-[#A3D4FF] block text-center"
+          className="flex flex-col items-center justify-center bg-[#BAE1FF] text-white p-6 rounded-lg shadow-lg hover:bg-[#A3D4FF] transform hover:scale-105 transition-transform duration-200"
         >
-          Go to Maintenance Form
+          <FaWrench size={40} className="mb-4" />
+          <span className="text-lg font-semibold">Maintenance Form</span>
         </Link>
+
+        {/* Maintenance Records */}
         <Link
           href="/maintenance-records"
-          className="bg-[#BAFFD7] text-white px-6 py-3 rounded-lg hover:bg-[#A3FFCA] block text-center"
+          className="flex flex-col items-center justify-center bg-[#BAFFD7] text-white p-6 rounded-lg shadow-lg hover:bg-[#A3FFCA] transform hover:scale-105 transition-transform duration-200"
         >
-          Go to Maintenance Records Table
+          <FaClipboardList size={40} className="mb-4" />
+          <span className="text-lg font-semibold">Maintenance Records</span>
         </Link>
+
+        {/* Dashboard */}
         <Link
           href="/dashboard"
-          className="bg-[#E1BAFF] text-white px-6 py-3 rounded-lg hover:bg-[#D4A3FF] block text-center"
+          className="flex flex-col items-center justify-center bg-[#E1BAFF] text-white p-6 rounded-lg shadow-lg hover:bg-[#D4A3FF] transform hover:scale-105 transition-transform duration-200 col-span-2"
         >
-          Go to Dashboard
+          <FaChartPie size={40} className="mb-4" />
+          <span className="text-lg font-semibold">Dashboard</span>
         </Link>
       </div>
     </div>
