@@ -1,55 +1,37 @@
-"use client";
+'use client'; // Add this directive to mark the component as a client component
 
-import React, { useState } from "react";
-
-type Equipment = {
-  id: string;
-  name: string;
-  type: string;
-  purchaseDate: string;
-  maintenanceInterval: number;
-  status: string; // e.g., "Operational", "Needs Repair", "Retired"
-};
-
-const mockData: Equipment[] = [
-  { id: "1", name: "Drill", type: "Tool", purchaseDate: "2021-01-15", maintenanceInterval: 30, status: "Operational" },
-  { id: "2", name: "Tractor", type: "Vehicle", purchaseDate: "2019-07-20", maintenanceInterval: 90, status: "Needs Repair" },
-  { id: "3", name: "Welding Machine", type: "Tool", purchaseDate: "2020-05-12", maintenanceInterval: 60, status: "Retired" },
-];
+import React, { useState, useEffect } from 'react';
 
 export default function EquipmentTable() {
-  const [equipment, setEquipment] = useState<Equipment[]>(mockData);
+  const [equipment, setEquipment] = useState([]);
   const [filter, setFilter] = useState("");
-  const [sortKey, setSortKey] = useState<keyof Equipment | "">("");
-  const [bulkStatus, setBulkStatus] = useState("");
+  const [sortKey, setSortKey] = useState<string>("");
 
-  // Sort equipment if sortKey is set
-  const sortedEquipment = sortKey
-    ? [...equipment].sort((a, b) => {
-        const aValue = a[sortKey as keyof Equipment];
-        const bValue = b[sortKey as keyof Equipment];
-        if (aValue < bValue) return -1;
-        if (aValue > bValue) return 1;
+  // Fetch equipment from localStorage on component mount
+  useEffect(() => {
+    const storedEquipment = JSON.parse(localStorage.getItem('equipment') || '[]');
+    setEquipment(storedEquipment);
+  }, []);
+
+  // Sort equipment based on sortKey
+  const sortedEquipment = React.useMemo(() => {
+    if (equipment) {
+      return [...equipment].sort((a, b) => {
+        if (sortKey) {
+          return a[sortKey] > b[sortKey] ? 1 : -1;
+        }
         return 0;
-      })
-    : equipment;
+      });
+    }
+    return [];
+  }, [equipment, sortKey]);
 
-  // Filter equipment
-  const filteredEquipment = sortedEquipment.filter((eq) =>
+  // Filter equipment based on search input
+  const filteredEquipment = (sortedEquipment || []).filter((eq) =>
     Object.values(eq).some((val) =>
       String(val).toLowerCase().includes(filter.toLowerCase())
     )
   );
-
-  // Update bulk status
-  const updateBulkStatus = () => {
-    if (!bulkStatus) return;
-    const updatedEquipment = equipment.map((eq) => ({
-      ...eq,
-      status: bulkStatus,
-    }));
-    setEquipment(updatedEquipment);
-  };
 
   return (
     <div className="p-6">
@@ -63,106 +45,36 @@ export default function EquipmentTable() {
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           className="border rounded p-2 w-full"
-          aria-label="Filter Equipment"
         />
-      </div>
-
-      {/* Bulk Status Update */}
-      <div className="mb-4 flex items-center">
-        <select
-          value={bulkStatus}
-          onChange={(e) => setBulkStatus(e.target.value)}
-          className="border rounded p-2 mr-2"
-          aria-label="Bulk Status Update"
-        >
-          <option value="">Select status</option>
-          <option value="Operational">Operational</option>
-          <option value="Needs Repair">Needs Repair</option>
-          <option value="Retired">Retired</option>
-        </select>
-        <button
-          onClick={updateBulkStatus}
-          disabled={!bulkStatus}
-          className={`px-4 py-2 rounded ${
-            bulkStatus
-              ? "bg-blue-500 text-white hover:bg-blue-600"
-              : "bg-gray-300 text-gray-700 cursor-not-allowed"
-          }`}
-        >
-          Update All Status
-        </button>
       </div>
 
       {/* Equipment Table */}
       <table className="w-full border-collapse border border-gray-300">
         <thead>
           <tr>
-            <th
-              onClick={() => setSortKey("name")}
-              className="cursor-pointer border p-2"
-              aria-label="Sort by Name"
-            >
-              Name
-            </th>
-            <th
-              onClick={() => setSortKey("type")}
-              className="cursor-pointer border p-2"
-              aria-label="Sort by Type"
-            >
-              Type
-            </th>
-            <th
-              onClick={() => setSortKey("purchaseDate")}
-              className="cursor-pointer border p-2"
-              aria-label="Sort by Purchase Date"
-            >
-              Purchase Date
-            </th>
-            <th
-              onClick={() => setSortKey("maintenanceInterval")}
-              className="cursor-pointer border p-2"
-              aria-label="Sort by Maintenance Interval"
-            >
-              Interval (Days)
-            </th>
-            <th
-              onClick={() => setSortKey("status")}
-              className="cursor-pointer border p-2"
-              aria-label="Sort by Status"
-            >
-              Status
-            </th>
+            <th onClick={() => setSortKey("name")} className="cursor-pointer border p-2">Name</th>
+            <th className="cursor-pointer border p-2">Location</th>
+            <th className="cursor-pointer border p-2">Department</th>
+            <th className="cursor-pointer border p-2">Model</th>
+            <th className="cursor-pointer border p-2">Serial Number</th>
+            <th className="cursor-pointer border p-2">Install Date</th>
+            <th className="cursor-pointer border p-2">Status</th>
           </tr>
         </thead>
         <tbody>
           {filteredEquipment.map((eq) => (
-            <tr
-              key={eq.id}
-              className={`${
-                eq.status === "Operational"
-                  ? "bg-green-100"
-                  : eq.status === "Needs Repair"
-                  ? "bg-yellow-100"
-                  : "bg-red-100"
-              }`}
-            >
+            <tr key={eq.id}>
               <td className="border p-2">{eq.name}</td>
-              <td className="border p-2">{eq.type}</td>
-              <td className="border p-2">{eq.purchaseDate}</td>
-              <td className="border p-2">{eq.maintenanceInterval}</td>
+              <td className="border p-2">{eq.location}</td>
+              <td className="border p-2">{eq.department}</td>
+              <td className="border p-2">{eq.model}</td>
+              <td className="border p-2">{eq.serialNumber}</td>
+              <td className="border p-2">{eq.installDate}</td>
               <td className="border p-2">{eq.status}</td>
             </tr>
           ))}
         </tbody>
       </table>
-
-      {/* Go Back Button */}
-      <div className="mt-4">
-        <a href="/" className="text-blue-500 underline">
-          ← Go Back to Home
-        </a>
-      </div>
     </div>
   );
 }
-
