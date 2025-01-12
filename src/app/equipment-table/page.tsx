@@ -13,6 +13,13 @@ export default function EquipmentTable() {
     setEquipment(storedEquipment);
   }, []);
 
+  // Delete an equipment entry
+  const handleDelete = (id: string) => {
+    const updatedEquipment = equipment.filter((eq) => eq.id !== id);
+    setEquipment(updatedEquipment);
+    localStorage.setItem('equipment', JSON.stringify(updatedEquipment));
+  };
+
   // Sort equipment based on sortKey
   const sortedEquipment = React.useMemo(() => {
     if (equipment) {
@@ -59,6 +66,7 @@ export default function EquipmentTable() {
             <th className="cursor-pointer border p-2">Serial Number</th>
             <th className="cursor-pointer border p-2">Install Date</th>
             <th className="cursor-pointer border p-2">Status</th>
+            <th className="border p-2">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -71,18 +79,25 @@ export default function EquipmentTable() {
               <td className="border p-2">{eq.serialNumber}</td>
               <td className="border p-2">{eq.installDate}</td>
               <td className="border p-2">{eq.status}</td>
+              <td className="border p-2">
+                <button
+                  onClick={() => handleDelete(eq.id)}
+                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
 
       {/* Go Back Button */}
-       <div className="mt-4">
+      <div className="mt-4">
         <a href="/" className="text-blue-500 underline">
           ← Go Back to Home
         </a>
       </div>
-
     </div>
   );
 }

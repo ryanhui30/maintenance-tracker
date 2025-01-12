@@ -13,6 +13,13 @@ export default function MaintenanceTable() {
     setRecords(storedRecords);
   }, []);
 
+  // Delete a maintenance record
+  const handleDelete = (id: string) => {
+    const updatedRecords = records.filter((record) => record.id !== id);
+    setRecords(updatedRecords);
+    localStorage.setItem('maintenanceRecords', JSON.stringify(updatedRecords));
+  };
+
   // Sort maintenance records based on sortKey
   const sortedRecords = React.useMemo(() => {
     if (records) {
@@ -60,6 +67,7 @@ export default function MaintenanceTable() {
             <th onClick={() => setSortKey("hoursSpent")} className="cursor-pointer border p-2">Hours Spent</th>
             <th onClick={() => setSortKey("priority")} className="cursor-pointer border p-2">Priority</th>
             <th onClick={() => setSortKey("completionStatus")} className="cursor-pointer border p-2">Completion Status</th>
+            <th className="border p-2">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -73,6 +81,14 @@ export default function MaintenanceTable() {
               <td className="border p-2">{record.hoursSpent}</td>
               <td className="border p-2">{record.priority}</td>
               <td className="border p-2">{record.completionStatus}</td>
+              <td className="border p-2">
+                <button
+                  onClick={() => handleDelete(record.id)}
+                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -84,7 +100,6 @@ export default function MaintenanceTable() {
           ← Go Back to Home
         </a>
       </div>
-
     </div>
   );
 }
