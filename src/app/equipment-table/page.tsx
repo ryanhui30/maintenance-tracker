@@ -75,6 +75,14 @@ export default function EquipmentTable() {
           ))}
         </tbody>
       </table>
+
+      {/* Go Back Button */}
+       <div className="mt-4">
+        <a href="/" className="text-blue-500 underline">
+          ← Go Back to Home
+        </a>
+      </div>
+
     </div>
   );
 }

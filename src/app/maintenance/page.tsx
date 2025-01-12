@@ -1,160 +1,220 @@
-"use client";
+'use client'; // Add this directive to mark the component as a client component
 
-import React, { useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useState } from 'react';
 
-// Schema Validation with Zod
-const maintenanceRecordSchema = z.object({
-  id: z.string().nonempty("ID is required"),
-  equipmentId: z.string().nonempty("Equipment selection is required"),
-  date: z.date().refine((date) => date <= new Date(), "Date cannot be in the future"),
-  type: z.enum(["Preventive", "Repair", "Emergency"]),
-  technician: z.string().min(2, "Technician name must be at least 2 characters"),
-  hoursSpent: z
-    .number()
-    .positive("Hours spent must be a positive number")
-    .max(24, "Hours spent cannot exceed 24 hours"),
-  description: z.string().min(10, "Description must be at least 10 characters"),
-  partsReplaced: z.array(z.string()).optional(),
-  priority: z.enum(["Low", "Medium", "High"]),
-  completionStatus: z.enum(["Complete", "Incomplete", "Pending Parts"]),
-});
-
-type MaintenanceRecord = z.infer<typeof maintenanceRecordSchema>;
-
-export default function MaintenanceRecordForm() {
-  const { register, handleSubmit, control, formState: { errors } } = useForm<MaintenanceRecord>({
-    resolver: zodResolver(maintenanceRecordSchema),
+export default function MaintenanceForm() {
+  const [formData, setFormData] = useState({
+    id: "", // Manually input the maintenance ID
+    equipmentId: "",
+    date: "",
+    type: "Preventive",
+    technician: "",
+    hoursSpent: "",
+    description: "",
+    partsReplaced: [],
+    priority: "Medium",
+    completionStatus: "Incomplete",
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "partsReplaced", // Managing dynamic array for parts replaced
-  });
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
 
-  const onSubmit = (data: MaintenanceRecord) => {
-    console.log("Submitted Maintenance Record:", data);
-    // Logic to handle form submission
+  const handlePartsChange = (index: number, value: string) => {
+    setFormData((prevData) => {
+      const updatedParts = [...prevData.partsReplaced];
+      updatedParts[index] = value;
+      return { ...prevData, partsReplaced: updatedParts };
+    });
+  };
+
+  const addPart = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      partsReplaced: [...prevData.partsReplaced, ""],
+    }));
+  };
+
+  const removePart = (index: number) => {
+    setFormData((prevData) => {
+      const updatedParts = prevData.partsReplaced.filter((_, i) => i !== index);
+      return { ...prevData, partsReplaced: updatedParts };
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Check if required fields are filled
+    if (!formData.id || !formData.equipmentId) {
+      alert("Please fill in both the Maintenance ID and Equipment ID.");
+      return;
+    }
+
+    // Convert hoursSpent to a number
+    const maintenanceRecord = {
+      ...formData,
+      hoursSpent: parseFloat(formData.hoursSpent),
+    };
+
+    // Retrieve existing maintenance records from localStorage
+    const existingRecords = JSON.parse(localStorage.getItem('maintenanceRecords') || '[]');
+
+    // Add the new record to the list
+    const updatedRecords = [...existingRecords, maintenanceRecord];
+
+    // Save the updated records back to localStorage
+    localStorage.setItem('maintenanceRecords', JSON.stringify(updatedRecords));
+
+    // Success feedback
+    alert("Maintenance record added successfully!");
+
+    // Reset the form fields
+    setFormData({
+      id: "",
+      equipmentId: "",
+      date: "",
+      type: "Preventive",
+      technician: "",
+      hoursSpent: "",
+      description: "",
+      partsReplaced: [],
+      priority: "Medium",
+      completionStatus: "Incomplete",
+    });
   };
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Add Maintenance Record</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* ID */}
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label>ID</label>
-          <input {...register("id")} className="border rounded p-2 w-full" />
-          {errors.id && <p className="text-red-500">{errors.id.message}</p>}
+          <label>Maintenance ID</label>
+          <input
+            name="id"
+            value={formData.id}
+            onChange={handleInputChange}
+            className="border rounded p-2 w-full"
+            placeholder="Enter Maintenance ID"
+            required
+          />
         </div>
-
-        {/* Equipment ID */}
-        {/* Equipment ID */}
         <div>
-            <label>Equipment ID</label>
-            <input {...register("equipmentId")} className="border rounded p-2 w-full" />
-            {errors.equipmentId && <p className="text-red-500">{errors.equipmentId.message}</p>}
+          <label>Equipment ID</label>
+          <input
+            name="equipmentId"
+            value={formData.equipmentId}
+            onChange={handleInputChange}
+            className="border rounded p-2 w-full"
+            placeholder="Enter Equipment ID"
+            required
+          />
         </div>
-
-        {/* Date */}
         <div>
           <label>Date</label>
-          <input type="date" {...register("date", { valueAsDate: true })} className="border rounded p-2 w-full" />
-          {errors.date && <p className="text-red-500">{errors.date.message}</p>}
+          <input
+            name="date"
+            type="date"
+            value={formData.date}
+            onChange={handleInputChange}
+            className="border rounded p-2 w-full"
+          />
         </div>
-
-        {/* Type */}
         <div>
           <label>Type</label>
-          <select {...register("type")} className="border rounded p-2 w-full">
+          <select
+            name="type"
+            value={formData.type}
+            onChange={handleInputChange}
+            className="border rounded p-2 w-full"
+          >
             <option value="Preventive">Preventive</option>
             <option value="Repair">Repair</option>
             <option value="Emergency">Emergency</option>
           </select>
-          {errors.type && <p className="text-red-500">{errors.type.message}</p>}
         </div>
-
-        {/* Technician */}
         <div>
           <label>Technician</label>
-          <input {...register("technician")} className="border rounded p-2 w-full" />
-          {errors.technician && <p className="text-red-500">{errors.technician.message}</p>}
+          <input
+            name="technician"
+            value={formData.technician}
+            onChange={handleInputChange}
+            className="border rounded p-2 w-full"
+            placeholder="Enter Technician Name"
+          />
         </div>
-
-        {/* Hours Spent */}
         <div>
           <label>Hours Spent</label>
           <input
+            name="hoursSpent"
             type="number"
-            {...register("hoursSpent", { valueAsNumber: true })}
+            value={formData.hoursSpent}
+            onChange={handleInputChange}
             className="border rounded p-2 w-full"
+            placeholder="Enter Hours Spent"
           />
-          {errors.hoursSpent && <p className="text-red-500">{errors.hoursSpent.message}</p>}
         </div>
-
-        {/* Description */}
         <div>
-          <label>Description</label>
-          <textarea {...register("description")} className="border rounded p-2 w-full" rows={3} />
-          {errors.description && <p className="text-red-500">{errors.description.message}</p>}
-        </div>
-
-        {/* Parts Replaced */}
-        <div>
-        <label className="block mb-2 font-medium">Parts Replaced</label>
-        {fields.map((field, index) => (
-            <div key={field.id} className="flex items-center space-x-4 mb-2">
-            <input
-                {...register(`partsReplaced.${index}` as const)}
-                className="border rounded p-2 flex-1"
-                placeholder="Enter part name"
-            />
+          <label className="block mb-2">Parts Replaced</label>
+          <div className="border border-solid rounded p-4">
             <button
-                type="button"
-                onClick={() => remove(index)}
-                className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600"
+              type="button"
+              onClick={addPart}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
-                Remove
+              Add Part
             </button>
-            </div>
-        ))}
-        <button
-            type="button"
-            onClick={() => append("")}
-            className="mt-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-        >
-            Add Part
-        </button>
+            {formData.partsReplaced.map((part, index) => (
+              <div key={index} className="flex items-center space-x-2 mt-2">
+                <input
+                  value={part}
+                  onChange={(e) => handlePartsChange(index, e.target.value)}
+                  className="border rounded p-2 w-full"
+                  placeholder="Enter Part"
+                />
+                <button
+                  type="button"
+                  onClick={() => removePart(index)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
-
-        {/* Priority */}
         <div>
           <label>Priority</label>
-          <select {...register("priority")} className="border rounded p-2 w-full">
+          <select
+            name="priority"
+            value={formData.priority}
+            onChange={handleInputChange}
+            className="border rounded p-2 w-full"
+          >
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
             <option value="High">High</option>
           </select>
-          {errors.priority && <p className="text-red-500">{errors.priority.message}</p>}
         </div>
-
-        {/* Completion Status */}
         <div>
           <label>Completion Status</label>
-          <select {...register("completionStatus")} className="border rounded p-2 w-full">
+          <select
+            name="completionStatus"
+            value={formData.completionStatus}
+            onChange={handleInputChange}
+            className="border rounded p-2 w-full"
+          >
             <option value="Complete">Complete</option>
             <option value="Incomplete">Incomplete</option>
             <option value="Pending Parts">Pending Parts</option>
           </select>
-          {errors.completionStatus && <p className="text-red-500">{errors.completionStatus.message}</p>}
         </div>
-
-        {/* Submit Button */}
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          className="bg-blue-500 text-white p-2 rounded"
         >
           Submit
         </button>
