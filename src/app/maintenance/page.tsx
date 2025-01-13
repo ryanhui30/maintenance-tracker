@@ -1,20 +1,37 @@
-'use client'; // Add this directive to mark the component as a client component
+'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+// Define the FormData type for clarity
+type FormData = {
+  id: string;
+  equipmentId: string;
+  date: string;
+  type: "Preventive" | "Repair" | "Emergency";
+  technician: string;
+  hoursSpent: number;  // Changed to number
+  description: string;
+  partsReplaced: string[];
+  priority: "Low" | "Medium" | "High";
+  completionStatus: "Complete" | "Incomplete" | "Pending Parts";
+};
 
 export default function MaintenanceForm() {
-  const [formData, setFormData] = useState({
-    id: "", // Manually input the maintenance ID
+  const [formData, setFormData] = useState<FormData>({
+    id: "",
     equipmentId: "",
     date: "",
     type: "Preventive",
     technician: "",
-    hoursSpent: "",
+    hoursSpent: 0,  // Initialized as a number
     description: "",
     partsReplaced: [],
     priority: "Medium",
     completionStatus: "Incomplete",
   });
+
+  const router = useRouter();
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -48,29 +65,23 @@ export default function MaintenanceForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Check if required fields are filled
     if (!formData.id || !formData.equipmentId) {
       alert("Please fill in both the Maintenance ID and Equipment ID.");
       return;
     }
 
-    // Convert hoursSpent to a number
     const maintenanceRecord = {
       ...formData,
-      hoursSpent: parseFloat(formData.hoursSpent),
+      hoursSpent: formData.hoursSpent,  // Use the number directly here
     };
 
-    // Retrieve existing maintenance records from localStorage
     const existingRecords = JSON.parse(localStorage.getItem('maintenanceRecords') || '[]');
-
-    // Add the new record to the list
     const updatedRecords = [...existingRecords, maintenanceRecord];
 
-    // Save the updated records back to localStorage
     localStorage.setItem('maintenanceRecords', JSON.stringify(updatedRecords));
 
-    // Success feedback
-    alert("Maintenance record added successfully!");
+    // Show success alert
+    alert("Maintenance report added successfully!");
 
     // Reset the form fields
     setFormData({
@@ -79,7 +90,7 @@ export default function MaintenanceForm() {
       date: "",
       type: "Preventive",
       technician: "",
-      hoursSpent: "",
+      hoursSpent: 0,  // Reset as number
       description: "",
       partsReplaced: [],
       priority: "Medium",

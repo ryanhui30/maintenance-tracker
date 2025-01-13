@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React from "react";
-import { Pie, Bar } from "react-chartjs-2";
+import React, { useState, useEffect } from 'react';
+import { Pie, Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -10,50 +10,69 @@ import {
   CategoryScale,
   LinearScale,
   BarElement,
-  Title,
-} from "chart.js";
+} from 'chart.js';
 
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title
-);
+// Register Chart.js components
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
 export default function Dashboard() {
-  // Mock data for charts
+  const [equipmentData, setEquipmentData] = useState([]);
+  const [maintenanceData, setMaintenanceData] = useState([]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Load data from localStorage
+      const equipment = JSON.parse(localStorage.getItem('equipment') || '[]');
+      const maintenance = JSON.parse(localStorage.getItem('maintenanceRecords') || '[]');
+
+      setEquipmentData(equipment);
+      setMaintenanceData(maintenance);
+    }
+  }, []);
+
+  // Pie Chart: Equipment Status Breakdown
   const equipmentStatusData = {
-    labels: ["Operational", "Under Maintenance", "Out of Service"],
+    labels: ['Operational', 'Down', 'Maintenance', 'Retired'],
     datasets: [
       {
-        data: [70, 20, 10],
-        backgroundColor: ["#A8E6CF", "#FFD3B6", "#FFAAA5"],
-        hoverBackgroundColor: ["#94D7B5", "#FFBE9E", "#FF8A80"],
+        label: 'Equipment Status',
+        data: [
+          equipmentData.filter((eq) => eq.status === 'Operational').length,
+          equipmentData.filter((eq) => eq.status === 'Down').length,
+          equipmentData.filter((eq) => eq.status === 'Maintenance').length,
+          equipmentData.filter((eq) => eq.status === 'Retired').length,
+        ],
+        backgroundColor: ['#4CAF50', '#F44336', '#FF9800', '#9E9E9E'],
       },
     ],
   };
+
+  // Bar Chart: Maintenance Hours by Type
+  const maintenanceTypes = ['Preventive', 'Repair', 'Emergency'];
 
   const maintenanceHoursData = {
-    labels: ["Mechanical", "Electrical", "Plumbing"],
+    labels: maintenanceTypes,
     datasets: [
       {
-        label: "Hours",
-        data: [30, 50, 20],
-        backgroundColor: ["#A3D8F4", "#FFB6C1", "#FFDAC1"],
-        hoverBackgroundColor: ["#8FC8E6", "#FFA4B2", "#FFCFB0"],
+        label: 'Hours Spent',
+        data: maintenanceTypes.map((type) =>
+          maintenanceData
+            .filter((record) => record.type === type)
+            .reduce((sum, record) => sum + (record.hoursSpent || 0), 0)
+        ),
+        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
       },
     ],
   };
 
-  // Mock recent maintenance activities
-  const recentActivities = [
-    { id: 1, equipment: "Drill", date: "2024-12-15", action: "Lubrication" },
-    { id: 2, equipment: "Tractor", date: "2024-12-14", action: "Engine Repair" },
-    { id: 3, equipment: "Welding Machine", date: "2024-12-13", action: "Head Replacement" },
-  ];
+  // Recent Maintenance Activities
+  const recentActivities = maintenanceData
+    .slice(0, 5) // Show only the latest 5 activities
+    .map((record) => ({
+      equipmentId: record.equipmentId, // Displaying the equipment ID
+      date: record.date,
+      action: record.type,
+    }));
 
   return (
     <div className="p-4 space-y-6">
@@ -66,7 +85,7 @@ export default function Dashboard() {
           <Pie data={equipmentStatusData} />
         </div>
 
-        {/* Bar Chart: Maintenance Hours by Department */}
+        {/* Bar Chart: Maintenance Hours by Type */}
         <div className="p-4 rounded-lg bg-white shadow">
           <h2 className="text-lg font-semibold mb-2 text-[#355C7D]">Maintenance Hours</h2>
           <Bar data={maintenanceHoursData} options={{ responsive: true }} />
@@ -79,29 +98,37 @@ export default function Dashboard() {
         <table className="w-full text-sm border-collapse">
           <thead>
             <tr className="bg-white shadow text-[#355C7D]">
-              <th className="border p-2">Equipment</th>
+              <th className="border p-2">Equipment ID</th>
               <th className="border p-2">Date</th>
               <th className="border p-2">Action</th>
             </tr>
           </thead>
           <tbody>
-            {recentActivities.map((activity) => (
-              <tr key={activity.id} className="odd:bg-white even:bg-[#F8F9FA]">
-                <td className="border p-2 text-[#355C7D]">{activity.equipment}</td>
-                <td className="border p-2 text-[#355C7D]">{activity.date}</td>
-                <td className="border p-2 text-[#355C7D]">{activity.action}</td>
+            {recentActivities.length > 0 ? (
+              recentActivities.map((activity, index) => (
+                <tr key={index} className="odd:bg-white even:bg-[#F8F9FA]">
+                  <td className="border p-2 text-[#355C7D]">{activity.equipmentId}</td>
+                  <td className="border p-2 text-[#355C7D]">{activity.date}</td>
+                  <td className="border p-2 text-[#355C7D]">{activity.action}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={3} className="border p-2 text-center text-[#355C7D]">
+                  No recent activities found.
+                </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
 
-        {/* Go Back Button */}
-        <div className="mt-4">
-            <a href="/" className="text-blue-500 underline">
-            ← Go Back to Home
-            </a>
-        </div>
+      {/* Go Back Button */}
+      <div className="mt-4">
+        <a href="/" className="text-blue-500 underline">
+          ← Go Back to Home
+        </a>
+      </div>
     </div>
   );
 }

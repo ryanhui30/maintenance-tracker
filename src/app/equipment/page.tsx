@@ -1,6 +1,7 @@
-'use client'; // Add this directive to mark the component as a client component
+'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function EquipmentForm() {
   const [formData, setFormData] = useState({
@@ -14,13 +15,13 @@ export default function EquipmentForm() {
     status: "Operational",
   });
 
-  // Handle form input changes
+  const router = useRouter();
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  // Handle form submission to add new equipment
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newEquipment = { ...formData, id: Date.now().toString() }; // Add unique ID
@@ -33,9 +34,6 @@ export default function EquipmentForm() {
 
     // Save the updated list back to localStorage
     localStorage.setItem('equipment', JSON.stringify(updatedEquipment));
-
-    // Show success alert
-    alert("Equipment added successfully!");
 
     // Reset form fields
     setFormData({
