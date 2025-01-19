@@ -1,0 +1,18 @@
+-- CreateTable
+CREATE TABLE "Equipment" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL,
+    "status" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "Maintenance" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "equipmentId" INTEGER NOT NULL,
+    "type" TEXT NOT NULL,
+    "hoursSpent" REAL NOT NULL,
+    "date" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "Maintenance_equipmentId_fkey" FOREIGN KEY ("equipmentId") REFERENCES "Equipment" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);

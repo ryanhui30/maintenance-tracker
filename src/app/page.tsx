@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FaTools, FaTable, FaWrench, FaClipboardList, FaChartPie } from "react-icons/fa";
+import { FaTools, FaTable, FaWrench, FaClipboardList, FaChartPie, FaDatabase } from "react-icons/fa"; // Ensure FaDatabase is imported
 
 export default function HomePage() {
   return (
@@ -51,6 +51,15 @@ export default function HomePage() {
         >
           <FaChartPie size={40} className="mb-4" />
           <span className="text-lg font-semibold">Dashboard</span>
+        </Link>
+
+        {/* Database */}
+        <Link
+          href="/database"
+          className="flex flex-col items-center justify-center bg-[#C1E1FF] text-white p-6 rounded-lg shadow-lg hover:bg-[#A3D4FF] transform hover:scale-105 transition-transform duration-200 col-span-2"
+        >
+          <FaDatabase size={40} className="mb-4" />
+          <span className="text-lg font-semibold">User Database</span>
         </Link>
       </div>
     </div>
