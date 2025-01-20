@@ -14,7 +14,7 @@ export default function EquipmentForm() {
     installDate: "",
     status: "Operational",
   });
-
+  const [errors, setErrors] = useState({});
   const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -22,8 +22,45 @@ export default function EquipmentForm() {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  const validateForm = () => {
+    const newErrors: any = {};
+    if (!formData.name || formData.name.length < 3) {
+      newErrors.name = "Name is required and must be at least 3 characters.";
+    }
+    if (!formData.location) {
+      newErrors.location = "Location is required.";
+    }
+    if (!formData.model) {
+      newErrors.model = "Model is required.";
+    }
+    if (!formData.serialNumber || !/^[a-zA-Z0-9]+$/.test(formData.serialNumber)) {
+      newErrors.serialNumber = "Serial Number is required and must be alphanumeric.";
+    }
+    if (!formData.installDate) {
+      newErrors.installDate = "Install Date is required.";
+    } else {
+      const installDate = new Date(formData.installDate);
+      const today = new Date();
+      if (installDate >= today) {
+        newErrors.installDate = "Install Date must be a past date.";
+      }
+    }
+    return newErrors;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    if (!validateForm()) {
+      alert("Please correct the errors before submitting.");
+      return;
+    }
+
     const newEquipment = { ...formData, id: Date.now().toString() }; // Add unique ID
 
     // Get the existing equipment data from localStorage
@@ -35,7 +72,10 @@ export default function EquipmentForm() {
     // Save the updated list back to localStorage
     localStorage.setItem('equipment', JSON.stringify(updatedEquipment));
 
-    // Reset form fields
+    // Show success alert
+    alert("Equipment added successfully!");
+
+    // Reset form fields and errors
     setFormData({
       id: "",
       name: "",
@@ -46,21 +86,13 @@ export default function EquipmentForm() {
       installDate: "",
       status: "Operational",
     });
+    setErrors({});
   };
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Add Equipment</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label>ID</label>
-          <input
-            name="id"
-            value={formData.id}
-            onChange={handleInputChange}
-            className="border rounded p-2 w-full"
-          />
-        </div>
         <div>
           <label>Name</label>
           <input
@@ -69,6 +101,7 @@ export default function EquipmentForm() {
             onChange={handleInputChange}
             className="border rounded p-2 w-full"
           />
+          {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
         </div>
         <div>
           <label>Location</label>
@@ -78,6 +111,7 @@ export default function EquipmentForm() {
             onChange={handleInputChange}
             className="border rounded p-2 w-full"
           />
+          {errors.location && <p className="text-red-500 text-sm">{errors.location}</p>}
         </div>
         <div>
           <label>Department</label>
@@ -101,6 +135,7 @@ export default function EquipmentForm() {
             onChange={handleInputChange}
             className="border rounded p-2 w-full"
           />
+          {errors.model && <p className="text-red-500 text-sm">{errors.model}</p>}
         </div>
         <div>
           <label>Serial Number</label>
@@ -110,6 +145,7 @@ export default function EquipmentForm() {
             onChange={handleInputChange}
             className="border rounded p-2 w-full"
           />
+          {errors.serialNumber && <p className="text-red-500 text-sm">{errors.serialNumber}</p>}
         </div>
         <div>
           <label>Install Date</label>
@@ -120,6 +156,7 @@ export default function EquipmentForm() {
             onChange={handleInputChange}
             className="border rounded p-2 w-full"
           />
+          {errors.installDate && <p className="text-red-500 text-sm">{errors.installDate}</p>}
         </div>
         <div>
           <label>Status</label>

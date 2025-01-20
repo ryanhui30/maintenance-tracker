@@ -5,6 +5,8 @@ import React, { useState, useEffect } from 'react';
 export default function EquipmentTable() {
   const [equipment, setEquipment] = useState([]);
   const [filter, setFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState<Set<string>>(new Set());
+  const [departmentFilter, setDepartmentFilter] = useState<Set<string>>(new Set());
   const [sortKey, setSortKey] = useState<string>("");
 
   // Fetch equipment from localStorage on component mount
@@ -20,6 +22,30 @@ export default function EquipmentTable() {
     localStorage.setItem('equipment', JSON.stringify(updatedEquipment));
   };
 
+  // Handle status filter change
+  const handleStatusFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const status = event.target.value;
+    const updatedSet = new Set(statusFilter);
+    if (updatedSet.has(status)) {
+      updatedSet.delete(status);
+    } else {
+      updatedSet.add(status);
+    }
+    setStatusFilter(updatedSet);
+  };
+
+  // Handle department filter change
+  const handleDepartmentFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const department = event.target.value;
+    const updatedSet = new Set(departmentFilter);
+    if (updatedSet.has(department)) {
+      updatedSet.delete(department);
+    } else {
+      updatedSet.add(department);
+    }
+    setDepartmentFilter(updatedSet);
+  };
+
   // Sort equipment based on sortKey
   const sortedEquipment = React.useMemo(() => {
     if (equipment) {
@@ -33,18 +59,37 @@ export default function EquipmentTable() {
     return [];
   }, [equipment, sortKey]);
 
-  // Filter equipment based on search input
-  const filteredEquipment = (sortedEquipment || []).filter((eq) =>
-    Object.values(eq).some((val) =>
+  // Filter equipment based on search input, status, and department
+  const filteredEquipment = (sortedEquipment || []).filter((eq) => {
+    const matchesSearch = Object.values(eq).some((val) =>
       String(val).toLowerCase().includes(filter.toLowerCase())
-    )
-  );
+    );
+    const matchesStatus = statusFilter.size === 0 || statusFilter.has(eq.status);
+    const matchesDepartment = departmentFilter.size === 0 || departmentFilter.has(eq.department);
+    return matchesSearch && matchesStatus && matchesDepartment;
+  });
+
+  // Function to get row color based on status
+  const getRowColor = (status: string) => {
+    switch (status) {
+      case 'Operational':
+        return 'bg-green-100';
+      case 'Down':
+        return 'bg-red-100';
+      case 'Maintenance':
+        return 'bg-yellow-100';
+      case 'Retired':
+        return 'bg-gray-100';
+      default:
+        return 'bg-white';
+    }
+  };
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Equipment Table</h1>
 
-      {/* Filter */}
+      {/* Search Field */}
       <div className="mb-4">
         <input
           type="text"
@@ -53,6 +98,47 @@ export default function EquipmentTable() {
           onChange={(e) => setFilter(e.target.value)}
           className="border rounded p-2 w-full"
         />
+      </div>
+
+      {/* Filters Section (Checklist below the search) */}
+      <div className="mb-4">
+        <div className="flex space-x-6">
+          {/* Status Filters (Checkboxes) */}
+          <div>
+            <h2 className="font-bold text-sm mb-2">Status</h2>
+            {['Operational', 'Down', 'Maintenance', 'Retired'].map((status) => (
+              <div key={status}>
+                <input
+                  type="checkbox"
+                  id={status}
+                  value={status}
+                  checked={statusFilter.has(status)}
+                  onChange={handleStatusFilterChange}
+                  className="mr-2"
+                />
+                <label htmlFor={status}>{status}</label>
+              </div>
+            ))}
+          </div>
+
+          {/* Department Filters (Checkboxes) */}
+          <div>
+            <h2 className="font-bold text-sm mb-2">Department</h2>
+            {['Machining', 'Assembly', 'Packaging', 'Shipping'].map((department) => (
+              <div key={department}>
+                <input
+                  type="checkbox"
+                  id={department}
+                  value={department}
+                  checked={departmentFilter.has(department)}
+                  onChange={handleDepartmentFilterChange}
+                  className="mr-2"
+                />
+                <label htmlFor={department}>{department}</label>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Equipment Table */}
@@ -71,7 +157,10 @@ export default function EquipmentTable() {
         </thead>
         <tbody>
           {filteredEquipment.map((eq) => (
-            <tr key={eq.id}>
+            <tr
+              key={eq.id}
+              className={getRowColor(eq.status)}
+            >
               <td className="border p-2">{eq.name}</td>
               <td className="border p-2">{eq.location}</td>
               <td className="border p-2">{eq.department}</td>

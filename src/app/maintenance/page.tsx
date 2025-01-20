@@ -1,43 +1,36 @@
-'use client';
+'use client'; // Add this directive to mark the component as a client component
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-
-// Define the FormData type for clarity
-type FormData = {
-  id: string;
-  equipmentId: string;
-  date: string;
-  type: "Preventive" | "Repair" | "Emergency";
-  technician: string;
-  hoursSpent: number;  // Changed to number
-  description: string;
-  partsReplaced: string[];
-  priority: "Low" | "Medium" | "High";
-  completionStatus: "Complete" | "Incomplete" | "Pending Parts";
-};
 
 export default function MaintenanceForm() {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState({
     id: "",
     equipmentId: "",
     date: "",
     type: "Preventive",
     technician: "",
-    hoursSpent: 0,  // Initialized as a number
+    hoursSpent: "",
     description: "",
     partsReplaced: [],
     priority: "Medium",
     completionStatus: "Incomplete",
   });
 
-  const router = useRouter();
+  const [errors, setErrors] = useState({
+    id: "",
+    equipmentId: "",
+    date: "",
+    technician: "",
+    hoursSpent: "",
+    description: "",
+  });
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" })); // Clear error on change
   };
 
   const handlePartsChange = (index: number, value: string) => {
@@ -62,26 +55,45 @@ export default function MaintenanceForm() {
     });
   };
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    if (!formData.id.trim()) newErrors.id = "Maintenance ID is required.";
+    if (!formData.equipmentId.trim()) newErrors.equipmentId = "Equipment ID is required.";
+    if (!formData.date.trim()) newErrors.date = "Date is required.";
+    if (!formData.technician.trim()) newErrors.technician = "Technician name is required.";
+    if (!formData.hoursSpent.trim() || isNaN(Number(formData.hoursSpent))) {
+      newErrors.hoursSpent = "Valid hours spent are required.";
+    }
+    if (!formData.description.trim()) newErrors.description = "Description is required.";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // Valid if no errors
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.id || !formData.equipmentId) {
-      alert("Please fill in both the Maintenance ID and Equipment ID.");
+    if (!validateForm()) {
+      alert("Please correct the errors before submitting.");
       return;
     }
 
+    // Convert hoursSpent to a number
     const maintenanceRecord = {
       ...formData,
-      hoursSpent: formData.hoursSpent,  // Use the number directly here
+      hoursSpent: parseFloat(formData.hoursSpent),
     };
 
+    // Retrieve existing maintenance records from localStorage
     const existingRecords = JSON.parse(localStorage.getItem('maintenanceRecords') || '[]');
+
+    // Add the new record to the list
     const updatedRecords = [...existingRecords, maintenanceRecord];
 
+    // Save the updated records back to localStorage
     localStorage.setItem('maintenanceRecords', JSON.stringify(updatedRecords));
 
-    // Show success alert
-    alert("Maintenance report added successfully!");
+    // Success feedback
+    alert("Maintenance record added successfully!");
 
     // Reset the form fields
     setFormData({
@@ -90,12 +102,13 @@ export default function MaintenanceForm() {
       date: "",
       type: "Preventive",
       technician: "",
-      hoursSpent: 0,  // Reset as number
+      hoursSpent: "",
       description: "",
       partsReplaced: [],
       priority: "Medium",
       completionStatus: "Incomplete",
     });
+    setErrors({});
   };
 
   return (
@@ -110,8 +123,8 @@ export default function MaintenanceForm() {
             onChange={handleInputChange}
             className="border rounded p-2 w-full"
             placeholder="Enter Maintenance ID"
-            required
           />
+          {errors.id && <p className="text-red-500">{errors.id}</p>}
         </div>
         <div>
           <label>Equipment ID</label>
@@ -121,8 +134,8 @@ export default function MaintenanceForm() {
             onChange={handleInputChange}
             className="border rounded p-2 w-full"
             placeholder="Enter Equipment ID"
-            required
           />
+          {errors.equipmentId && <p className="text-red-500">{errors.equipmentId}</p>}
         </div>
         <div>
           <label>Date</label>
@@ -133,6 +146,7 @@ export default function MaintenanceForm() {
             onChange={handleInputChange}
             className="border rounded p-2 w-full"
           />
+          {errors.date && <p className="text-red-500">{errors.date}</p>}
         </div>
         <div>
           <label>Type</label>
@@ -156,6 +170,7 @@ export default function MaintenanceForm() {
             className="border rounded p-2 w-full"
             placeholder="Enter Technician Name"
           />
+          {errors.technician && <p className="text-red-500">{errors.technician}</p>}
         </div>
         <div>
           <label>Hours Spent</label>
@@ -167,35 +182,18 @@ export default function MaintenanceForm() {
             className="border rounded p-2 w-full"
             placeholder="Enter Hours Spent"
           />
+          {errors.hoursSpent && <p className="text-red-500">{errors.hoursSpent}</p>}
         </div>
         <div>
-          <label className="block mb-2">Parts Replaced</label>
-          <div className="border border-solid rounded p-4">
-            <button
-              type="button"
-              onClick={addPart}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              Add Part
-            </button>
-            {formData.partsReplaced.map((part, index) => (
-              <div key={index} className="flex items-center space-x-2 mt-2">
-                <input
-                  value={part}
-                  onChange={(e) => handlePartsChange(index, e.target.value)}
-                  className="border rounded p-2 w-full"
-                  placeholder="Enter Part"
-                />
-                <button
-                  type="button"
-                  onClick={() => removePart(index)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
-          </div>
+          <label>Description</label>
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleInputChange}
+            className="border rounded p-2 w-full"
+            placeholder="Enter Description"
+          />
+          {errors.description && <p className="text-red-500">{errors.description}</p>}
         </div>
         <div>
           <label>Priority</label>

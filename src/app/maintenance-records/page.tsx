@@ -1,4 +1,4 @@
-'use client'; // Add this directive to mark the component as a client component
+"use client";
 
 import React, { useState, useEffect } from 'react';
 
