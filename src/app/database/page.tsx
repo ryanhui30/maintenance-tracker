@@ -7,62 +7,79 @@ const apiBaseUrl = "/api"; // Adjust this if needed.
 
 export default function DatabasePage() {
   const [users, setUsers] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [roleName, setRoleName] = useState("");
+  const [selectedRole, setSelectedRole] = useState("");
   const [error, setError] = useState(null);
 
-  // Fetch users
-  const fetchUsers = async () => {
+  // Fetch users and roles
+  const fetchUsersAndRoles = async () => {
     try {
       const usersResponse = await axios.get(`${apiBaseUrl}/users`);
+      const rolesResponse = await axios.get(`${apiBaseUrl}/roles`);
       setUsers(usersResponse.data);
-      setError(null); // Clear any existing error
+      setRoles(rolesResponse.data);
     } catch (error) {
-      console.error("Error fetching users:", error.message);
-      setError("Failed to load users. Please try again.");
+      console.error("Error fetching users and roles:", error.message);
+      alert("Failed to load data. Please try again later.");
     }
   };
 
   // Add user
   const addUser = async () => {
-    if (!name.trim() || !email.trim()) {
-      setError("Name and Email cannot be empty.");
-      return;
-    }
-
     try {
-      console.log("Adding user:", { name, email }); // Log input data for debugging
-
-      const response = await axios.post(`${apiBaseUrl}/users`, { name, email });
-
-      if (response.status === 200) {
-        setName("");
-        setEmail("");
-        fetchUsers(); // Refresh user list
-      } else {
-        throw new Error(response.data?.error || "Failed to add user.");
-      }
+      await axios.post(`${apiBaseUrl}/users`, { email, name });
+      setEmail("");
+      setName("");
+      fetchUsersAndRoles(); // Refresh user list
     } catch (err) {
-      console.error("Error adding user:", err.message);
-      setError("Error adding user. Please try again.");
+      console.error(err);
+      setError("Error adding user.");
+    }
+  };
+
+  // Add role
+  const addRole = async () => {
+    try {
+      await axios.post(`${apiBaseUrl}/roles`, { name: roleName });
+      setRoleName("");
+      fetchUsersAndRoles(); // Refresh role list
+    } catch (err) {
+      console.error(err);
+      setError("Error adding role.");
+    }
+  };
+
+  // Assign role to user (via string input)
+  const assignRole = async () => {
+    try {
+      await axios.post(`${apiBaseUrl}/assign-role`, { role: selectedRole, userId: name });
+      setSelectedRole("");
+      setName("");
+      fetchUsersAndRoles(); // Refresh users and roles
+    } catch (err) {
+      console.error(err);
+      setError("Error assigning role.");
     }
   };
 
   useEffect(() => {
-    fetchUsers();
+    fetchUsersAndRoles();
   }, []);
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">User Management</h1>
+      <h1 className="text-2xl font-bold mb-4">User and Role Management</h1>
 
       {/* Error message */}
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+      {error && <p className="text-red-500">{error}</p>}
 
       {/* Table Layout */}
-      <div className="space-y-4">
-        {/* Table: User Information */}
-        <div>
+      <div className="flex space-x-12">
+        {/* Table 1: User Information */}
+        <div className="space-y-4">
           <h2 className="text-lg font-semibold mb-2">User Information</h2>
           <table className="border-collapse border border-gray-300 w-full">
             <thead>
@@ -74,9 +91,7 @@ export default function DatabasePage() {
             <tbody>
               {users.length === 0 ? (
                 <tr>
-                  <td className="border border-gray-300 p-2" colSpan={2}>
-                    No users available
-                  </td>
+                  <td className="border border-gray-300 p-2" colSpan={2}>No users available</td>
                 </tr>
               ) : (
                 users.map((user) => (
@@ -88,31 +103,79 @@ export default function DatabasePage() {
               )}
             </tbody>
           </table>
+          {/* Add User Form */}
+          <div>
+            <input
+              type="text"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="border p-2 rounded w-full"
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="border p-2 rounded w-full"
+            />
+            <button
+              onClick={addUser}
+              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 mt-2 w-full"
+            >
+              Add Entry
+            </button>
+          </div>
         </div>
 
-        {/* Add User Form */}
-        <div className="mt-4">
-          <h2 className="text-lg font-semibold mb-2">Add User</h2>
-          <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="border p-2 rounded w-full mb-2"
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border p-2 rounded w-full mb-2"
-          />
-          <button
-            onClick={addUser}
-            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 w-full"
-          >
-            Add Entry
-          </button>
+        {/* Table 2: Role Assignment */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold mb-2">Assign Role to User</h2>
+          <table className="border-collapse border border-gray-300 w-full">
+            <thead>
+              <tr>
+                <th className="border border-gray-300 p-2">Name</th>
+                <th className="border border-gray-300 p-2">Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              {roles.length === 0 ? (
+                <tr>
+                  <td className="border border-gray-300 p-2" colSpan={2}>No roles available</td>
+                </tr>
+              ) : (
+                roles.map((role) => (
+                  <tr key={role.id}>
+                    <td className="border border-gray-300 p-2">{role.name}</td>
+                    <td className="border border-gray-300 p-2">{role.name}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+          {/* Assign Role Form */}
+          <div>
+            <input
+              type="text"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="border p-2 rounded w-full"
+            />
+            <input
+              type="text"
+              placeholder="Role"
+              value={selectedRole}
+              onChange={(e) => setSelectedRole(e.target.value)}
+              className="border p-2 rounded w-full mt-2"
+            />
+            <button
+              onClick={assignRole}
+              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 mt-2 w-full"
+            >
+              Add Entry
+            </button>
+          </div>
         </div>
       </div>
 
