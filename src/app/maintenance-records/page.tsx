@@ -33,12 +33,14 @@ export default function MaintenanceTable() {
     return [];
   }, [records, sortKey]);
 
-  // Filter maintenance records based on search input
-  const filteredRecords = (sortedRecords || []).filter((record) =>
-    Object.values(record).some((val) =>
-      String(val).toLowerCase().includes(filter.toLowerCase())
-    )
-  );
+  // Filter maintenance records based on Maintenance ID only
+  const filteredRecords = React.useMemo(() => {
+    const searchWord = filter.trim().toLowerCase();
+
+    return (sortedRecords || []).filter((record) =>
+      String(record.id).toLowerCase().includes(searchWord)
+    );
+  }, [sortedRecords, filter]);
 
   return (
     <div className="p-6">

@@ -59,14 +59,16 @@ export default function EquipmentTable() {
     return [];
   }, [equipment, sortKey]);
 
-  // Filter equipment based on search input, status, and department
+  // Filter equipment based only on name
   const filteredEquipment = (sortedEquipment || []).filter((eq) => {
-    const matchesSearch = Object.values(eq).some((val) =>
-      String(val).toLowerCase().includes(filter.toLowerCase())
-    );
+    const searchWord = filter.trim().toLowerCase();
+    const matchesName = eq.name.toLowerCase().includes(searchWord);
+
+    // Check status and department filters
     const matchesStatus = statusFilter.size === 0 || statusFilter.has(eq.status);
     const matchesDepartment = departmentFilter.size === 0 || departmentFilter.has(eq.department);
-    return matchesSearch && matchesStatus && matchesDepartment;
+
+    return matchesName && matchesStatus && matchesDepartment;
   });
 
   // Function to get row color based on status
