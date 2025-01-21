@@ -52,7 +52,7 @@ export default function DatabasePage() {
     }
   };
 
-  // Assign role to user (via string input)
+  // Assign role to user
   const assignRole = async () => {
     try {
       await axios.post(`${apiBaseUrl}/assign-role`, { role: selectedRole, userId: name });
@@ -69,6 +69,9 @@ export default function DatabasePage() {
     fetchUsersAndRoles();
   }, []);
 
+  const formFieldClass = "border p-2 rounded w-full mb-2";
+  const buttonClass = "bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 mt-2 w-full";
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">User and Role Management</h1>
@@ -76,10 +79,9 @@ export default function DatabasePage() {
       {/* Error message */}
       {error && <p className="text-red-500">{error}</p>}
 
-      {/* Table Layout */}
       <div className="flex space-x-12">
-        {/* Table 1: User Information */}
-        <div className="space-y-4">
+        {/* User Information Section */}
+        <div className="space-y-4 w-1/2">
           <h2 className="text-lg font-semibold mb-2">User Information</h2>
           <table className="border-collapse border border-gray-300 w-full">
             <thead>
@@ -91,7 +93,9 @@ export default function DatabasePage() {
             <tbody>
               {users.length === 0 ? (
                 <tr>
-                  <td className="border border-gray-300 p-2" colSpan={2}>No users available</td>
+                  <td className="border border-gray-300 p-2" colSpan={2}>
+                    No users available
+                  </td>
                 </tr>
               ) : (
                 users.map((user) => (
@@ -103,33 +107,29 @@ export default function DatabasePage() {
               )}
             </tbody>
           </table>
-          {/* Add User Form */}
           <div>
             <input
               type="text"
               placeholder="Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="border p-2 rounded w-full"
+              className={formFieldClass}
             />
             <input
               type="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="border p-2 rounded w-full"
+              className={formFieldClass}
             />
-            <button
-              onClick={addUser}
-              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 mt-2 w-full"
-            >
-              Add Entry
+            <button onClick={addUser} className={buttonClass}>
+              Add User
             </button>
           </div>
         </div>
 
-        {/* Table 2: Role Assignment */}
-        <div className="space-y-4">
+        {/* Role Assignment Section */}
+        <div className="space-y-4 w-1/2">
           <h2 className="text-lg font-semibold mb-2">Assign Role to User</h2>
           <table className="border-collapse border border-gray-300 w-full">
             <thead>
@@ -141,7 +141,9 @@ export default function DatabasePage() {
             <tbody>
               {roles.length === 0 ? (
                 <tr>
-                  <td className="border border-gray-300 p-2" colSpan={2}>No roles available</td>
+                  <td className="border border-gray-300 p-2" colSpan={2}>
+                    No roles available
+                  </td>
                 </tr>
               ) : (
                 roles.map((role) => (
@@ -153,27 +155,23 @@ export default function DatabasePage() {
               )}
             </tbody>
           </table>
-          {/* Assign Role Form */}
           <div>
             <input
               type="text"
               placeholder="Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="border p-2 rounded w-full"
+              className={formFieldClass}
             />
             <input
               type="text"
               placeholder="Role"
               value={selectedRole}
               onChange={(e) => setSelectedRole(e.target.value)}
-              className="border p-2 rounded w-full mt-2"
+              className={formFieldClass}
             />
-            <button
-              onClick={assignRole}
-              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 mt-2 w-full"
-            >
-              Add Entry
+            <button onClick={assignRole} className={buttonClass}>
+              Assign Role
             </button>
           </div>
         </div>
