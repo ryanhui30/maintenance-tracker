@@ -1,41 +1,80 @@
-# Maintenance Tracker
+# 🛠️ Maintenance Tracker Pro
 
-Maintenance Tracker is a simple web app for managing equipment and maintenance records. The goal is to streamline the process of tracking maintenance activities, equipment status, and related data in an organized and intuitive way.
+![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3-blue?logo=tailwind-css&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-5.0-purple?logo=prisma&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-1.4-green?logo=playwright&logoColor=white)
 
----
+A full-stack maintenance management system with equipment tracking, maintenance records, and data visualization.
+
+## ✨ Key Features
+
+- **Equipment Management**:
+  - 📋 Add/edit equipment with detailed specs
+  - 🔍 Filterable equipment table
+  - 🏷️ Categorization system
+
+- **Maintenance Tracking**:
+  - 📅 Record maintenance activities
+  - ⚠️ Alert system for pending services
+  - 📊 Dashboard with maintenance history
+
+- **Advanced Functionality**:
+  - 📄 PDF report generation (jsPDF)
+  - 📈 Data visualization (Chart.js)
+  - ✅ End-to-end testing (Playwright)
+
+## 🛠 Tech Stack
+
+| Component          | Technology                          |
+|--------------------|-------------------------------------|
+| **Frontend**       | Next.js 14, React 18               |
+| **Styling**        | Tailwind CSS 3.3                   |
+| **Database**       | Prisma ORM (SQL/PostgreSQL)        |
+| **Testing**        | Playwright 1.4                     |
+| **PDF Generation** | jsPDF                              |
+
+## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js (v16 or later)
-- npm or yarn
+- Node.js v18+
+- PostgreSQL (or compatible database)
+- npm v9+ or yarn
 
-### Installation Steps
+### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/maintenance-tracker.git
+   git clone https://github.com/ryanhui30/maintenance-tracker.git
+   cd maintenance-tracker
+   ```
 
-2. Navigate to project directory:
+2. Install dependencies:
    ```bash
-    cd maintenance-tracker
+   npm install
+   Set up environment variables:
+   ```
 
-3. Install dependencies:
-    ```bash
-    npm install
+3. Set up environment variables:
+   ```bash
+   cp .env.example .env
+   # Update with your database credentials
+   ```
 
-4. Start the development server:
-    ```bash
-    npm run dev
+4. Run database migrations:
+   ```bash
+   npx prisma migrate dev
+   ```
+   
+5. Start the development server:
+   ```bash
+   npm run dev
+   ```
 
-### Key Libraries
-Next.js: For server side rendering and routing.
-Tailwind CSS: For fast and customizable styling.
-Chart.js: For visualizing data in charts.
+🧪 Testing
+Run end-to-end tests:
+   ```bash
+   npx playwright test
+   ```
 
-### Designing
-Have a simple and aesthetic looking management website using React and other components.
-
-### Testing:
-
-npx playwright test
-
-Currently in progress.
-
+Need Help?
+📩 Contact: ryanhui30@gmail.com
